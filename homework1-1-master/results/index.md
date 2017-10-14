@@ -5,6 +5,8 @@
 ## Overview
 Project 1 內容為實作出與<code>scipy.misc.imfilter</code>功能相近的Image Filtering，並將實作內容存在<code>my_imfilter</code>中，再用使用<code>my_imfilter</code>來分別取得不同image的高頻及低頻資訊，於<code>proj1.py</code>中實作出能產生Hybrid Images的程式。
 
+藉由調整<code>cutoff_frequency</code>(gaussian filter的標準差)和<code>alpha</code>(減去的低頻資訊比例)，可以得到較佳的視覺化結果。
+
 <a href="https://github.com/moopene36607/CV_homework1/tree/master/homework1-1-master">public version</a>
 ## Implementation
 ### 1. my_imfilter.py
@@ -99,8 +101,9 @@ hybrid_image = normalize(low_frequencies + high_frequencies)
 ### Results(quick look)
 * Given tasks
 <table border=1>
+
 <tr>
-<td>
+<td colspan="4">
 <img src="./Lcat_Hdog/hybrid_image.png" width="24%"/>
 <img src="./Ldog_Hcat/hybrid_image.png"  width="24%"/>
 <img src="./Lbird_Hplane/hybrid_image.png" width="24%"/>
@@ -109,7 +112,14 @@ hybrid_image = normalize(low_frequencies + high_frequencies)
 </tr>
 
 <tr>
-<td>
+<th>(a)</th>
+<th>(b)</th>
+<th>(c)</th>
+<th>(d)</th>
+</tr>
+
+<tr>
+<td colspan="4">
 <img src="./Lein_Hmar/hybrid_image.png" width="24%"/>
 <img src="./Lmar_Hein/hybrid_image.png"  width="24%"/>
 <img src="./Lsub_Hfish/hybrid_image.png" width="24%"/>
@@ -118,39 +128,105 @@ hybrid_image = normalize(low_frequencies + high_frequencies)
 </tr>
 
 <tr>
-<td>
+<th>(e)</th>
+<th>(f)</th>
+<th>(g)</th>
+<th>(h)</th>
+</tr>
+
+<tr>
+<td colspan="4">
 <img src="./Lmot_Hbike/hybrid_image.png" width="24%"/>
 <img src="./Lbike_Hmot/hybrid_image.png" width="24%"/>
 </td>
 </tr>
 
-
+<tr>
+<th>(i)</th>
+<th>(j)</th>
+</tr>
 </table>
+
+cutoff_frequency太高(高於11)，容易因為image1太過模糊，使合成圖即使縮小也很難看出image1所帶的低頻資訊。
+
+cutoff_frequency太低(低於6)，容易因為image1太過清晰，使得合成圖中image1嚴重干擾image2的高頻資訊。
+
+alpha越高，image2去除的低頻資訊越多，建議設定在0.7到1.4之間。
+
+以下說明實驗數據
+
+(a)(b)使用了cat和dog兩張圖，並設定cutoff_frequency=7, alpha=1
+
+(c)(d)使用了bird和plane兩張圖，並設定cutoff_frequency=8, alpha=0.9
+
+(e)(f)使用了einstein和marilyn兩張圖，並設定cutoff_frequency=7, alpha=1
+
+(g)(h)使用了fish和submarine兩張圖，並設定cutoff_frequency=8, alpha=1.1
+
+(i)(j)使用了motorcycle和bicycle兩張圖，並設定cutoff_frequency=9, alpha=1.2
+
 
 * Bonus
 <table border=1>
 <tr>
-<td>
-<img src="./Bonus_LbananaHsunflower/hybrid_image.png" width="33%"/>
-<img src="./Bonus_LsunfowerHbanana/hybrid_image.png"  width="33%"/>
+<td colspan="2">
+<img src="./Bonus_LbananaHsunflower/hybrid_image.png" width="49%"/>
+<img src="./Bonus_LsunfowerHbanana/hybrid_image.png"  width="49%"/>
 
 </td>
 </tr>
 
 <tr>
-<td>
-<img src="./Bonus_LkinHtrump/hybrid_image.png" width="33%"/>
-<img src="./Bonus_LgerHni/hybrid_image.png" width="33%"/>
+<th>(k)</th>
+<th>(l)</th>
+</tr>
+
+<tr>
+<td colspan="2">
+<img src="./Bonus_LkinHtrump/hybrid_image.png" width="49%"/>
+<img src="./Bonus_LgerHni/hybrid_image.png" width="49%"/>
 </td>
 </tr>
 
 <tr>
-<td>
-<img src="./Bonus_LcoHearth/hybrid_image.png"  width="30%"/>
-<img src="./Bonus_LdandelionHrabit/hybrid_image.png"  width="30%"/>
+<th>(m)</th>
+<th>(n)</th>
+</tr>
+
+<tr>
+<td colspan="2">
+<img src="./Bonus_LcoHearth/hybrid_image.png"  width="49%"/>
+<img src="./Bonus_LdandelionHrabit/hybrid_image.png"  width="49%"/>
 </td>
+</tr>
+
+<tr>
+<th>(o)</th>
+<th>(p)</th>
 </tr>
 </table>
+
+由(k)(l)可看出，若合成的圖片顏色分佈相近，縱使輪廓不相同，合成效果仍相當不錯
+
+由(m)(n)可看出，對於原先就很相近的圖片，原圖解析度夠高，合成圖才容易看出效果
+
+由(o)可看出，及使顏色分佈差異很大，但只要輪廓相同，合成效果仍相當不錯
+
+綜合上述，好的合成圖要由顏色分佈或輪廓其中一個要素相近的兩張圖來合成，效果最佳
+
+若兩張圖的顏色分佈和輪廓接相近，則解析度要夠高
+
+以下說明實驗數據
+
+(k)(l)使用了banana和sunflower兩張圖，並設定cutoff_frequency=8, alpha=0.8
+
+(m)使用了kin和trump兩張圖，並設定cutoff_frequency=9, alpha=1
+
+(n)使用了gerger和nini兩張圖，並設定cutoff_frequency=9, alpha= 1
+
+(o)使用了cookie和earth兩張圖，並設定cutoff_frequency=10, alpha=0.8
+
+(p)使用了dandelion和bunny兩張圖，並設定cutoff_frequency=6, alpha=0.7
 
 ### Results(scales)
 * Given tasks
